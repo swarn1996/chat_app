@@ -7,8 +7,8 @@ import LogoutIcon from "../assets/logout.png";
 
 const SideBar = ({ logout }) => (
   <div className="channel-list__sidebar">
-    <div className="channel-list__sidebar__icon1">
-      <div className="icon1__inner">
+    <div className="channel-list__sidebar__icon2">
+      <div className="icon2__inner">
         <img src={HospitalIcon} alt="Curly kingfisher" />
       </div>
     </div>
@@ -44,6 +44,7 @@ function ChannelListContent({
   setIsCreating,
   setCreateType,
   setIsEditing,
+  setToggleContainer,
 }) {
   const { client } = useChatContext();
   const [filter, setFilter] = useState("");
@@ -63,17 +64,18 @@ function ChannelListContent({
   };
 
   useEffect(() => {
-    if (client?.userID) setFilter(client.userID);
+    if (client?.userID) {
+      const filters = { members: { $in: [client.userID] } };
+      setFilter(filters);
+    }
   }, [client]);
-
-  // const filters = { members: { $in: [client.userID] } };
 
   return (
     <>
       <SideBar logout={logout} />
       <div className="channel-list__list__wrapper">
         <CompanyHeader />
-        <ChannelSearch />
+        <ChannelSearch setToggleContainer={setToggleContainer} />
         <ChannelList
           filters={filter}
           channelRenderFilterFn={customChannelTeamFilter}
@@ -85,10 +87,17 @@ function ChannelListContent({
               setIsCreating={setIsCreating}
               setCreateType={setCreateType}
               setIsEditing={setIsEditing}
+              setToggleContainer={setToggleContainer}
             />
           )}
           Preview={(previewProps) => (
-            <TeamChannelPreview {...previewProps} type="team" />
+            <TeamChannelPreview
+              {...previewProps}
+              setIsCreating={setIsCreating}
+              setIsEditing={setIsEditing}
+              type="team"
+              setToggleContainer={setToggleContainer}
+            />
           )}
         />
         <ChannelList
@@ -102,10 +111,17 @@ function ChannelListContent({
               setIsCreating={setIsCreating}
               setCreateType={setCreateType}
               setIsEditing={setIsEditing}
+              setToggleContainer={setToggleContainer}
             />
           )}
           Preview={(previewProps) => (
-            <TeamChannelPreview {...previewProps} type="messaging" />
+            <TeamChannelPreview
+              {...previewProps}
+              setIsCreating={setIsCreating}
+              setIsEditing={setIsEditing}
+              type="messaging"
+              setToggleContainer={setToggleContainer}
+            />
           )}
         />
       </div>
@@ -119,7 +135,7 @@ const ChannelListContainer = ({
   setCreateType,
   setIsEditing,
 }) => {
-  const [toggleContainer, setToggleContainer] = useState(false); // [1
+  const [toggleContainer, setToggleContainer] = useState(false);
   const { client } = useChatContext();
 
   return (
@@ -130,6 +146,7 @@ const ChannelListContainer = ({
           setIsCreating={setIsCreating}
           setCreateType={setCreateType}
           setIsEditing={setIsEditing}
+          setToggleContainer={setToggleContainer}
         />
       </div>
       <div
